@@ -1,0 +1,44 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Sign Up · AeroDrift</title><link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"></head><body class="auth"><div class="auth-card"><a class="brand" href="/"><span class="brand-mark">A</span><span><b>AeroDrift</b><small>Agentic Cloud Remediation</small></span></a><p class="eyebrow">CREATE WORKSPACE</p><h1>Start monitoring your cloud.</h1><form id="signupForm"><label>Full name<input id="signupName" name="name" autocomplete="name" required></label><label>Email<input id="signupEmail" name="email" type="email" autocomplete="email" required></label><label>Password<input id="signupPassword" name="password" type="password" minlength="6" autocomplete="new-password" required></label><label class="check"><input id="terms" type="checkbox" required> I agree to the Terms & Privacy Policy</label><div id="signupError" class="auth-error"></div><button id="signupButton" class="btn btn-primary btn-full" type="submit">Create AeroDrift Account</button></form><p class="auth-foot">Already have an account? <a href="/login">Login</a></p></div><script>
+const signupForm = document.getElementById('signupForm');
+const signupName = document.getElementById('signupName');
+const signupEmail = document.getElementById('signupEmail');
+const signupPassword = document.getElementById('signupPassword');
+const signupError = document.getElementById('signupError');
+const signupButton = document.getElementById('signupButton');
+
+signupForm.addEventListener('submit', async (event) => {
+  event.preventDefault();
+  signupError.textContent = '';
+  const name = signupName.value.trim();
+  const email = signupEmail.value.trim().toLowerCase();
+  const password = signupPassword.value;
+
+  if (!name || !email || password.length < 6) {
+    signupError.textContent = 'Name, email and a password of at least 6 characters are required.';
+    return;
+  }
+
+  signupButton.disabled = true;
+  signupButton.textContent = 'Creating account...';
+
+  try {
+    const response = await fetch('/api/auth/signup', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      credentials: 'same-origin',
+      body: JSON.stringify({name, email, password})
+    });
+    const data = await response.json();
+    if (response.ok && data.ok) {
+      window.location.href = '/dashboard';
+    } else {
+      signupError.textContent = data.message || 'Unable to create account.';
+    }
+  } catch (error) {
+    signupError.textContent = 'Could not connect to AeroDrift. Make sure the Flask server is running.';
+  } finally {
+    signupButton.disabled = false;
+    signupButton.textContent = 'Create AeroDrift Account';
+  }
+});
+</script></body></html>

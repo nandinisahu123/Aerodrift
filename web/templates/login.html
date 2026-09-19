@@ -1,0 +1,33 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Login · AeroDrift</title><link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"></head><body class="auth"><div class="auth-card"><a class="brand" href="/"><span class="brand-mark">A</span><span><b>AeroDrift</b><small>Agentic Cloud Remediation</small></span></a><p class="eyebrow">WELCOME BACK</p><h1>Sign in to AeroDrift</h1><p>Access your cloud security dashboard.</p><form id="authForm"><label>Email<input id="loginEmail" type="email" autocomplete="email" required placeholder="you@example.com"></label><label>Password<input id="loginPassword" type="password" autocomplete="current-password" required placeholder="••••••••"></label><div id="authError" class="auth-error"></div><button id="loginButton" class="btn btn-primary btn-full" type="submit">Login</button></form><div class="auth-divider">Protected workspace</div><p class="auth-note">Sign in to access the AeroDrift dashboard, topology and remediation tools.</p><p class="auth-foot">New to AeroDrift? <a href="/signup">Create account</a></p></div><script>
+const authForm = document.getElementById('authForm');
+const loginEmail = document.getElementById('loginEmail');
+const loginPassword = document.getElementById('loginPassword');
+const authError = document.getElementById('authError');
+const loginButton = document.getElementById('loginButton');
+
+authForm.addEventListener('submit', async (event) => {
+  event.preventDefault();
+  authError.textContent = '';
+  loginButton.disabled = true;
+  loginButton.textContent = 'Signing in...';
+  try {
+    const response = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      credentials: 'same-origin',
+      body: JSON.stringify({email: loginEmail.value.trim().toLowerCase(), password: loginPassword.value})
+    });
+    const data = await response.json();
+    if (response.ok && data.ok) {
+      window.location.href = '/dashboard';
+    } else {
+      authError.textContent = data.message || 'Invalid email or password.';
+    }
+  } catch (error) {
+    authError.textContent = 'Could not connect to AeroDrift. Make sure the Flask server is running.';
+  } finally {
+    loginButton.disabled = false;
+    loginButton.textContent = 'Login';
+  }
+});
+</script></body></html>

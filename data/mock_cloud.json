@@ -1,0 +1,22 @@
+{
+  "security_groups": [
+    {
+      "id": "sg-db-prod",
+      "name": "production-db",
+      "rules": [
+        {"protocol": "tcp", "port": 5432, "source": "10.0.0.0/16"},
+        {"protocol": "tcp", "port": 5432, "source": "0.0.0.0/0"}
+      ]
+    }
+  ],
+  "resources": [
+    {"id": "vpc-prod", "type": "vpc", "name": "production-vpc"},
+    {"id": "subnet-private", "type": "subnet", "name": "private-db-subnet"},
+    {"id": "db-prod", "type": "database", "name": "production-postgres", "private": true}
+  ],
+  "connections": [
+    {"source": "sg-db-prod", "target": "vpc-prod", "reason": "vpc_attachment"},
+    {"source": "vpc-prod", "target": "subnet-private", "reason": "subnet_attachment"},
+    {"source": "subnet-private", "target": "db-prod", "reason": "database_attachment"}
+  ]
+}

@@ -1,0 +1,1 @@
+{% extends 'base.html' %}{% block title %}AeroDrift · Incident{% endblock %}{% block page_title %}Incident Investigation{% endblock %}{% block content %}<div id="incidentDetail"></div>{% endblock %}{% block scripts %}<script>window.INCIDENT_ID={{ incident_id|tojson }};</script><script src="{{ url_for('static', filename='js/incident_detail.js') }}"></script>{% endblock %}
